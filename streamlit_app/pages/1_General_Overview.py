@@ -2,6 +2,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import io
 # -------------------------------
 # PAGE CONFIG & TITLE
@@ -164,6 +165,34 @@ if uploaded:
             ax2.set_title("Histogram (NaNs Dropped)")
             ax2.set_xlabel("Daily Energy (kWh)")
             st.pyplot(fig2)
+       
+                # -------------------------------
+        # OUTLIER DETECTION
+        # -------------------------------
+        st.markdown("<div class='sub-title'>🚨 Outlier Detection for E-Today(KWH)</div>", unsafe_allow_html=True)
+
+
+
+        # Boxplot
+        fig, ax = plt.subplots(figsize=(12, 5))
+        sns.boxplot(x=df["E-Today(KWH)"], ax=ax)
+        ax.set_title("Boxplot of Daily Energy Production (kWh)")
+        st.pyplot(fig)
+
+        # IQR method
+        q1 = df["E-Today(KWH)"].quantile(0.25)
+        q3 = df["E-Today(KWH)"].quantile(0.75)
+        iqr = q3 - q1
+
+        outliers = df[(df["E-Today(KWH)"] < q1 - 1.5*iqr) | (df["E-Today(KWH)"] > q3 + 1.5*iqr)]
+
+        st.markdown(f"### Identified Outliers ({outliers.shape[0]} rows)")
+        st.dataframe(outliers[["E-Today(KWH)"]])
+
+
+
+
+
 
         # -------------------------------
         # EVENT COLUMN DESCRIPTION
